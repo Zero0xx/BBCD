@@ -1,11 +1,22 @@
-name: Unity Build
+name: Doki Build
 
-on: push
+on: workflow_dispatch
 
 env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
 
 jobs:
+  testRunner:
+    name: Test in ${{ matrix.testMode }} ✨
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        testMode:
+          - EditMode
+          - PlayMode
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -47,6 +58,7 @@ jobs:
         with:
           name: Test results (${{ matrix.testMode }})
           path: ${{ steps.testRunner.outputs.artifactsPath }}
+
   buildWebGL:
     needs: testRunner
     name: Build for WebGL 🖥️
@@ -90,6 +102,7 @@ jobs:
         with:
           name: build-WebGL
           path: build/WebGL
+
   buildWindows:
     needs: testRunner
     name: Build for Windows 🖥️
@@ -133,6 +146,7 @@ jobs:
         with:
           name: build-StandaloneWindows64
           path: build/StandaloneWindows64
+
   buildAndroid:
     needs: testRunner
     name: Build for Android 📱
@@ -176,6 +190,8 @@ jobs:
         with:
           name: build-Android
           path: build/Android
+
+
   deployPages:
     needs: buildWebGL
     name: Deploy to Github Pages 🚀
