@@ -1,4 +1,4 @@
-name: Doki Build
+name: Baldi Build
 
 on: workflow_dispatch
 
